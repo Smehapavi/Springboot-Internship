@@ -1,35 +1,39 @@
 package com.example.Springboot_Internship.controllers;
 
-import com.example.Springboot_Internship.Services.HelloWorldService;
-import com.example.Springboot_Internship.models.Employee;
+import com.example.Springboot_Internship.models.Student;
+import com.example.Springboot_Internship.services.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+//@Controller
+//@ResponseBody
 @RestController
-public class HelloworldController {
-
+public class HelloWorldController {
     @Autowired
     private HelloWorldService hws;
 
-    @GetMapping("/{empid}")
-    public Employee getEmployeeById(@PathVariable int empid) {
-        return hws.getEmployeeById(empid);
+    @GetMapping("/hello")
+    public List<Student> hello(){
+//        System.out.println("Hello world");
+//        return "Hello world this is universe";
+        return hws.getEmp();
     }
 
-    @PostMapping("/post")
-    public String postMethod(@RequestBody Employee Emp) {
-        return hws.post(Emp);
+    //post method
+    @PostMapping("/hello")
+    public String postmethod(){
+        return hws.postmethod();
     }
 
-    @PutMapping("/put")
-    public String putMethod(@RequestBody Employee Emp) {
-        return hws.updateRecord(Emp);
+    @PutMapping("/hello")
+    public String putmethod(){
+        return hws.putmethod();
     }
 
-    @DeleteMapping("/{empid}")
-    public String deleteMethod(@PathVariable int empid) {
-        return hws.deleteEmployeeById(empid);
+    @DeleteMapping("/hello")
+    public String deletemethod(){
+        return hws.deletemethod();
     }
 }
