@@ -8,8 +8,8 @@ public class SpringbootInternshipApplication {
 
 	public static void main(String[] args) {
 
-		//SpringApplication.run(SpringbootInternshipApplication.class, args);
-		System.out.println("This is my first springboot internship");
+		SpringApplication.run(SpringbootInternshipApplication.class, args);
+
 	}
 
 }
