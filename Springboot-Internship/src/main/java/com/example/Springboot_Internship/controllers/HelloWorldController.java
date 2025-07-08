@@ -1,39 +1,54 @@
 package com.example.Springboot_Internship.controllers;
 
-import com.example.Springboot_Internship.models.Student;
+import com.example.Springboot_Internship.models.Employee;
 import com.example.Springboot_Internship.services.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//@Controller
-//@ResponseBody
 @RestController
+@RequestMapping("/employee")
 public class HelloWorldController {
+    //Service layer
     @Autowired
     private HelloWorldService hws;
 
-    @GetMapping("/hello")
-    public List<Student> hello(){
-//        System.out.println("Hello world");
-//        return "Hello world this is universe";
-        return hws.getEmp();
+
+    @PostMapping
+    public String addEmployee(@RequestBody Employee e){
+        return String.valueOf(hws.addEmployee(e.getName(), e.getRole()));
     }
 
-    //post method
-    @PostMapping("/hello")
-    public String postmethod(){
-        return hws.postmethod();
+    @GetMapping
+    public List<Employee> getEmployees(){
+        return hws.getAllEmployees();
     }
 
-    @PutMapping("/hello")
-    public String putmethod(){
-        return hws.putmethod();
+    @GetMapping("/{eid}")
+    public Employee getEmployeeById(@PathVariable int eid){
+        return hws.getEmployeeById(eid);
     }
 
-    @DeleteMapping("/hello")
-    public String deletemethod(){
-        return hws.deletemethod();
+    @GetMapping("/job/{job}")
+    public Employee getEmployeeByJob(@PathVariable String job){
+        return hws.getEmployeeByJob(job);
     }
+
+    @DeleteMapping("/{eid}")
+    public String deleteEmployee(@PathVariable int eid){
+        return hws.deleteEmployeeById(eid);
+    }
+
+    @DeleteMapping
+    public String deleteAllEmployee(){
+        return hws.deleteAllEmployee();
+    }
+
+    @PutMapping("/{eid}")
+    public String updateRecord(@RequestBody Employee employee){
+        return hws.updateRecord(employee);
+    }
+
+
 }
