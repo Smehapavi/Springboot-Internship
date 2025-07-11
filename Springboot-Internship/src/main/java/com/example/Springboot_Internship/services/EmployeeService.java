@@ -1,12 +1,15 @@
 package com.example.Springboot_Internship.services;
 
 import com.example.Springboot_Internship.models.RegisterDetails;
+import com.example.Springboot_Internship.models.Todo;
 import com.example.Springboot_Internship.models.UserDetailsDto;
 import com.example.Springboot_Internship.repository.RegisterDetailsRepository;
+import com.example.Springboot_Internship.repository.TodoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
@@ -41,5 +44,24 @@ public class EmployeeService {
     public String deleteEmployeeById(int empID) {
         registerDetailsRepository.deleteById(empID);
         return "Employee Deleted Successfully";
+    }
+
+    public List<RegisterDetails> getEmployeesByRole(String roleName) {
+        return registerDetailsRepository.findAll().stream()
+                .filter(emp -> emp.getRoles().stream()
+                        .anyMatch(role -> role.getRoleName().equalsIgnoreCase(roleName)))
+                .collect(Collectors.toList());
+    }
+    @Autowired
+    TodoRepository todoRepository;
+    public String addTodo(int empId, Todo todo) {
+        RegisterDetails emp = registerDetailsRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        todo.setEmployee(emp);
+        todoRepository.save(todo);
+        return "Todo Added Successfully";
+    }
+    public List<Todo> getTodos(int empId) {
+        return todoRepository.findByEmployeeEmpId(empId);
     }
 }

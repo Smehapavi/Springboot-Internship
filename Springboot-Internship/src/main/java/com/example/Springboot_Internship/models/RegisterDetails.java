@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -31,5 +32,8 @@ public class RegisterDetails {
             inverseJoinColumns = @JoinColumn(name="role_id",referencedColumnName = "roleId")
     )
     private Set<Roles> roles;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+    private List<Todo> todos;
+
 
 }

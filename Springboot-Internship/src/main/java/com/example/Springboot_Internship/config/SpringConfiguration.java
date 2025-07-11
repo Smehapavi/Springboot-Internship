@@ -45,7 +45,7 @@ public class SpringConfiguration {
 //            .password(passwordEncoder().encode("admin"))
 //            .roles("ADMIN")
 //            .build();
-//    UserDetails varsh = User.builder()
+//    UserDetails pavi = User.builder()
 //            .username("pavi")
 //            .password(passwordEncoder().encode("pavi"))
 //            .roles("USER")
