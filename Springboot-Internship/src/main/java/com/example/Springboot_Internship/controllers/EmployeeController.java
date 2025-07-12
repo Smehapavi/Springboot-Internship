@@ -1,8 +1,7 @@
 package com.example.Springboot_Internship.controllers;
 
-
 import com.example.Springboot_Internship.models.RegisterDetails;
-import com.example.Springboot_Internship.models.Todo;
+import com.example.Springboot_Internship.models.Task;
 import com.example.Springboot_Internship.models.UserDetailsDto;
 import com.example.Springboot_Internship.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,75 +18,55 @@ public class EmployeeController {
 
     @GetMapping("/")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public String route(){
+    public String route() {
         return "Welcome to SpringBoot Security";
     }
 
-
     @GetMapping("/employee")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<RegisterDetails> getMethod(){
-        return employeeService.getMethod();
+    public List<RegisterDetails> getAllEmployees() {
+        return employeeService.getAllEmployees();
     }
-
 
     @GetMapping("/employee/{empId}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public RegisterDetails getEmployeeById(@PathVariable int empId){
-        System.out.println();
+    public RegisterDetails getEmployeeById(@PathVariable int empId) {
         return employeeService.getEmployeeById(empId);
     }
 
-
-
-//    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-//    @GetMapping("/employee/job/{job}")
-//    public List<RegisterDetails> getEmployeeByJob(@PathVariable String job){
-//        return employeeService.getEmployeeByJob(job);
-//    }
-
     @PostMapping("/employee")
     @PreAuthorize("hasRole('ADMIN')")
-    public String postMethod(@RequestBody RegisterDetails employee){
-//        Employee employee = new Employee(5,"Sivagami", "Business");
-        return employeeService.addEmployee(employee);
+    public String addEmployee(@RequestBody UserDetailsDto employeeDto) {
+        return employeeService.addNewEmployee(employeeDto);
     }
 
     @PutMapping("/employee/{empId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String putMethod(@PathVariable int empId){
-        return employeeService.updateEmployee(empId);
+    public String updateEmployee(@PathVariable int empId, @RequestBody RegisterDetails employee) {
+        return employeeService.updateEmployeeById(empId, employee);
     }
 
-    @DeleteMapping("/employee/{empID}")
+    @DeleteMapping("/employee/{empId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deleteMethod(@PathVariable int empID){
-        return employeeService.deleteEmployeeById(empID);
-    }
-    @PutMapping("/employee/{empId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String updateEmployee(@PathVariable int empId, @RequestBody RegisterDetails updatedDetails) {
-        return employeeService.updateEmployee(empId);
+    public String deleteEmployee(@PathVariable int empId) {
+        return employeeService.deleteEmployeeById(empId);
     }
 
-    @GetMapping("/employee/role/{role}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<RegisterDetails> getByRole(@PathVariable String role) {
-        return employeeService.getEmployeesByRole(role);
-    }
-
-    @PostMapping("/employee/{empId}/todo")
+    @GetMapping("/employee/role/{roleName}")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public String addTodo(@PathVariable int empId, @RequestBody Todo todo) {
-        return employeeService.addTodo(empId, todo);
+    public List<RegisterDetails> getEmployeesByRole(@PathVariable String roleName) {
+        return employeeService.getEmployeesByRole(roleName);
     }
 
-    @GetMapping("/employee/{empId}/todos")
+    @PostMapping("/employee/{empId}/assign-task")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String assignTask(@PathVariable int empId, @RequestBody Task task) {
+        return employeeService.assignTaskToEmployee(empId, task);
+    }
+
+    @GetMapping("/employee/{empId}/tasks")
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    public List<Todo> getTodos(@PathVariable int empId) {
-        return employeeService.getTodos(empId);
+    public List<Task> getEmployeeTasks(@PathVariable int empId) {
+        return employeeService.getTasksByEmployee(empId);
     }
-
-
-
 }

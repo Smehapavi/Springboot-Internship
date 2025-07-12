@@ -1,48 +1,86 @@
 package com.example.Springboot_Internship.services;
 
 import com.example.Springboot_Internship.models.RegisterDetails;
-import com.example.Springboot_Internship.models.Todo;
+import com.example.Springboot_Internship.models.Roles;
+import com.example.Springboot_Internship.models.Task;
 import com.example.Springboot_Internship.models.UserDetailsDto;
 import com.example.Springboot_Internship.repository.RegisterDetailsRepository;
-import com.example.Springboot_Internship.repository.TodoRepository;
+import com.example.Springboot_Internship.repository.RolesRepository;
+import com.example.Springboot_Internship.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class EmployeeService {
+
     @Autowired
-    RegisterDetailsRepository registerDetailsRepository;
+    private RegisterDetailsRepository registerDetailsRepository;
 
+    @Autowired
+    private RolesRepository rolesRepository;
 
-    public List<RegisterDetails> getMethod() {
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    public List<RegisterDetails> getAllEmployees() {
         return registerDetailsRepository.findAll();
     }
 
     public RegisterDetails getEmployeeById(int empId) {
-        return registerDetailsRepository.findById(empId).orElse(new RegisterDetails());
+        return registerDetailsRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee ID not found: " + empId));
     }
-
-//    public List<RegisterDetails> getEmployeeByJob() {
-//        return registerDetailsRepository.findByRole();
-//    }
 
     public String addEmployee(RegisterDetails employee) {
         registerDetailsRepository.save(employee);
         return "Employee Added Successfully";
     }
 
-    public String updateEmployee(int empId) {
-        RegisterDetails user = registerDetailsRepository.findById(empId)
-                .orElseThrow(()->new RuntimeException("No Such User Present"));
-        registerDetailsRepository.save(user);
-        return "Employee Updated Successfully";
+    public String addNewEmployee(UserDetailsDto register) {
+        RegisterDetails registerDetails = new RegisterDetails();
+        registerDetails.setEmpId(register.getEmpId());
+        registerDetails.setName(register.getName());
+        registerDetails.setEmail(register.getEmail());
+        registerDetails.setUserName(register.getUserName());
+        registerDetails.setPassword(passwordEncoder.encode(register.getPassword()));
+
+        Set<Roles> roles = new HashSet<>();
+        for (String roleName : register.getRoleName()) {
+            Roles role = RolesRepository.findByRoleName(roleName)
+                    .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+            roles.add(role);
+        }
+
+        registerDetails.setRoles(roles);
+        registerDetailsRepository.save(registerDetails);
+        return "Employee Added Successfully using DTO";
     }
 
-    public String deleteEmployeeById(int empID) {
-        registerDetailsRepository.deleteById(empID);
+    public String updateEmployeeById(int empId, RegisterDetails employee) {
+        RegisterDetails existing = registerDetailsRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee ID not found"));
+
+        existing.setName(employee.getName());
+        existing.setEmail(employee.getEmail());
+        existing.setUserName(employee.getUserName());
+        existing.setPassword(passwordEncoder.encode(employee.getPassword()));
+        existing.setRoles(employee.getRoles());
+
+        registerDetailsRepository.save(existing);
+        return "Employee updated successfully by ID";
+    }
+
+    public String deleteEmployeeById(int empId) {
+        registerDetailsRepository.deleteById(empId);
         return "Employee Deleted Successfully";
     }
 
@@ -52,16 +90,19 @@ public class EmployeeService {
                         .anyMatch(role -> role.getRoleName().equalsIgnoreCase(roleName)))
                 .collect(Collectors.toList());
     }
-    @Autowired
-    TodoRepository todoRepository;
-    public String addTodo(int empId, Todo todo) {
-        RegisterDetails emp = registerDetailsRepository.findById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        todo.setEmployee(emp);
-        todoRepository.save(todo);
-        return "Todo Added Successfully";
+
+    public String assignTaskToEmployee(int empId, Task task) {
+        RegisterDetails employee = registerDetailsRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee ID not found"));
+
+        task.setEmployee(employee);
+        taskRepository.save(task);
+        return "Task assigned to employee with ID ";
     }
-    public List<Todo> getTodos(int empId) {
-        return todoRepository.findByEmployeeEmpId(empId);
+
+    public List<Task> getTasksByEmployee(int empId) {
+        RegisterDetails employee = registerDetailsRepository.findById(empId)
+                .orElseThrow(() -> new RuntimeException("Employee ID not found"));
+        return taskRepository.findByEmployee(employee);
     }
 }

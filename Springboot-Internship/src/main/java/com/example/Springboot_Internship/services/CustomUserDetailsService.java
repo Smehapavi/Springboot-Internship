@@ -5,10 +5,7 @@ import com.example.Springboot_Internship.repository.RegisterDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -29,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
          */
 
         //Step 1
-        RegisterDetails user = registerDetailsRepository.findByUserName(username)
+        RegisterDetails user = (RegisterDetails) registerDetailsRepository.findByUserName(username)
                 .orElseThrow(()->new RuntimeException("User Not Found"));
 
         //Step 2
