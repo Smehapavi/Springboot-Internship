@@ -5,22 +5,21 @@ import com.example.Springboot.models.UserDetailsDto;
 import com.example.Springboot.services.AuthService;
 import com.example.Springboot.repository.RegisterDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    AuthService authService;
-
-    @PostMapping("/register")
-    public String addNewUser(@RequestBody UserDetailsDto register){
-        return authService.addNewEmployee(register);
-    }
+    private AuthService authService;
 
     @PostMapping("/login")
-    public String Login(@RequestBody RegisterDetails login){
-        return authService.authenticate(login);
+    public ResponseEntity<?> login(@RequestBody RegisterDetails loginRequest) {
+        String response = authService.authenticate(loginRequest).toString();
+        return ResponseEntity.ok(response);
     }
 }
