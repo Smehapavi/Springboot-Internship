@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>SpringbootIntern</artifactId>
+	<artifactId>Springboot</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringbootIntern</name>
+	<name>Springboot</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -99,7 +99,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<version>3.5.3</version>
 				<configuration>
-					<mainClass>com.example.SpringbootIntern.SpringbootInternApplication</mainClass>
+					<mainClass>com.example.Springboot.SpringbootApplication</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
