@@ -1,25 +1,29 @@
 package com.example.Springboot.controllers;
 
-import com.example.Springboot.models.RegisterDetails;
-import com.example.Springboot.models.UserDetailsDto;
-import com.example.Springboot.services.AuthService;
-import com.example.Springboot.repository.RegisterDetailsRepository;
+import com.example.Springboot.model.AuthResponse;
+import com.example.Springboot.model.RegisterDetails;
+import com.example.Springboot.model.UserDetailsDto;
+import com.example.Springboot.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.http.ResponseEntity;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
+    AuthService authService;
+
+    @PostMapping("/register")
+    public String addNewUser(@RequestBody UserDetailsDto register){
+        return authService.addNewEmployee(register);
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody RegisterDetails loginRequest) {
-        String response = authService.authenticate(loginRequest).toString();
+    public ResponseEntity<AuthResponse> Login(@RequestBody RegisterDetails login){
+        AuthResponse response = authService.authenticate(login);
         return ResponseEntity.ok(response);
     }
 }

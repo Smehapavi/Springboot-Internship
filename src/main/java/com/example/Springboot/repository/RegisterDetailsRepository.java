@@ -1,19 +1,20 @@
 package com.example.Springboot.repository;
 
-import com.example.Springboot.models.RegisterDetails;
+import com.example.Springboot.model.RegisterDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RegisterDetailsRepository extends JpaRepository<RegisterDetails, Integer> {
-
+public interface RegisterDetailsRepository extends JpaRepository<RegisterDetails,Integer> {
     RegisterDetails findByEmail(String email);
 
-    Optional<Object> findByUserName(String username);
+    @Query("SELECT r FROM RegisterDetails r JOIN r.roles role WHERE role.roleName = :roleName")
+    Optional<RegisterDetails> findByRole(@Param("roleName") String roleName);
+    Optional<RegisterDetails> findByUserName(String username);
 
-    boolean existsByEmail(String email);
-    List<RegisterDetails> findByRolesRoleName(String roleName);
 }

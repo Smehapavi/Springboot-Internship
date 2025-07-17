@@ -1,6 +1,6 @@
 package com.example.Springboot.jwt;
 
-import com.example.Springboot.services.CustomUserDetailsService;
+import com.example.Springboot.service.CustomerUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,15 +19,16 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private CustomerUserDetailsService userDetailsService;
 
     @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private com.example.Springboot.jwt.JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
         String token = null;
@@ -35,16 +36,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
-            username = jwtTokenProvider.getUsernameFromToken(token);
+
+
+            if (token.chars().filter(ch -> ch == '.').count() == 2) {
+                try {
+                    username = jwtTokenProvider.getUsernameFromToken(token);
+                } catch (Exception e) {
+                    System.out.println(" Failed to extract username from token: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Invalid token format: " + token);
+            }
+        } else {
+            System.out.println("Authorization header is missing or doesn't start with 'Bearer '");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtTokenProvider.validateToken(token)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            System.out.println("Token: " + token);
+            System.out.println("sername: " + username);
+            System.out.println(" Authorities: " + userDetails.getAuthorities());
+
+            if (jwtTokenProvider.vaildateToken(token)) {
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                        userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+            } else {
+                System.out.println("Token validation failed.");
             }
         }
 
